@@ -1,12 +1,6 @@
 name: Post Push
 
-on:
-  push:
-    branches:
-      - main
-  repository_dispatch:
-    types:
-      - update
+on: [workflow_dispatch, repository_dispatch]
 
 jobs:
   build:
@@ -30,7 +24,6 @@ jobs:
 
       - name: Update repo
         env:
-          TOKEN: ${{ github.token }}
           ACTOR: ${{ github.actor }}
           REPO: ${{ github.repository }}
         run: |
