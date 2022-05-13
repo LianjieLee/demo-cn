@@ -69,20 +69,20 @@ if __name__ == '__main__':
     se = sehuatang()
     bot = telegram.Bot(bot_id)
     se.getPostList()
-    for i in se.new_posts:
-        try:
-            title,content,img = se.getPostContent(i)
-            media_list = [telegram.InputMediaPhoto(media=img[0], caption=content, parse_mode='HTML')]
-            # TG limit to 10 pic
-            if len(img) > 10:
-                for j in range(1, 10):
-                    media_list.append(telegram.InputMediaPhoto(media=img[j]))
-            else:
-                for j in range(1, len(img)):
-                    media_list.append(telegram.InputMediaPhoto(media=img[j]))
-            bot.send_media_group(chat_id, media=media_list)
-            print(se.time(), title, '已发送', flush=True)
-            time.sleep(10)
-        except Exception as e:
-            print(se.time(), title, e, flush=True)
+    # for i in se.new_posts:
+    #     try:
+    #         title,content,img = se.getPostContent(i)
+    #         media_list = [telegram.InputMediaPhoto(media=img[0], caption=content, parse_mode='HTML')]
+    #         # TG limit to 10 pic
+    #         if len(img) > 10:
+    #             for j in range(1, 10):
+    #                 media_list.append(telegram.InputMediaPhoto(media=img[j]))
+    #         else:
+    #             for j in range(1, len(img)):
+    #                 media_list.append(telegram.InputMediaPhoto(media=img[j]))
+    #         bot.send_media_group(chat_id, media=media_list)
+    #         print(se.time(), title, '已发送', flush=True)
+    #         time.sleep(10)
+    #     except Exception as e:
+    #         print(se.time(), title, e, flush=True)
     se.updateList()
