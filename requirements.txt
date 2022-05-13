@@ -1,0 +1,4 @@
+bs4
+faker
+telegram
+python-telegram-bot

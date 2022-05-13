@@ -1,0 +1,45 @@
+name: Post Push
+
+on:
+  push:
+    branches:
+      - main
+  repository_dispatch:
+    types:
+      - update
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    steps: 
+      - name: Checkout source
+        uses: actions/checkout@v2
+      
+      - name: Install dependence
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run python
+        env:
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          BOT_ID: ${{ secrets.BOT_ID }}
+        run: |
+            python3 sehuatang.py
+
+      - name: Update repo
+        run: |
+          git config --local user.email "you@example.com"
+          git config --local user.name "Your Name"
+          git add .
+          git commit -m 'update' || exit 0
+          git push origin main
+
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 1
+          keep_minimum_runs: 6
