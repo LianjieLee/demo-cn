@@ -26,13 +26,13 @@ class sehuatang:
         soup = BeautifulSoup(r.text, 'html.parser')
         thread_list = soup.find('div', {'id': 'threadlist'})
         post_list = thread_list.find_all('tbody', {'id': re.compile(r'normalthread_\d*?')})
-        print(self.time(), f'抓取帖子{len(post_list)}个')
+        print(self.time(), f'抓取帖子{len(post_list)}个', flush=True)
         for i in post_list:
             thread = i.tr.td.a['href']
             self.all_posts.add(thread)
             if thread not in self.old_posts:
                 self.new_posts.append(self.url + thread)
-        print(self.time(), f'新帖子{len(self.new_posts)}个')
+        print(self.time(), f'新帖子{len(self.new_posts)}个', flush=True)
 
     # 获取帖子全文
     def getPostContent(self, url):
@@ -50,7 +50,7 @@ class sehuatang:
             else:
                 img.append(self.url + i['file'])
         content = title_link + '\n' + magnet
-        print(self.time(), title, "已获取")
+        print(self.time(), title, "已获取", flush=True)
         return title, content, img
 
     def time(self):
@@ -60,7 +60,7 @@ class sehuatang:
     def updateList(self):
         with open('list.txt', 'w') as f:
             f.write(str(self.all_posts))
-        print(self.time(), '列表已更新')
+        print(self.time(), '列表已更新', flush=True)
 
 
 if __name__ == '__main__':
@@ -81,8 +81,8 @@ if __name__ == '__main__':
                 for j in range(1, len(img)):
                     media_list.append(telegram.InputMediaPhoto(media=img[j]))
             bot.send_media_group(chat_id, media=media_list)
-            print(se.time(), title, '已发送')
+            print(se.time(), title, '已发送', flush=True)
             time.sleep(10)
         except Exception as e:
-            print(se.time(), title, e)
+            print(se.time(), title, e, flush=True)
     se.updateList()
