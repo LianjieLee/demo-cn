@@ -25,6 +25,7 @@ class sehuatang:
         self.header.update(hd)
         r = requests.get(self.url + 'forum-103-1.html', headers=self.header, cookies=self.cookies)
         soup = BeautifulSoup(r.text, 'html.parser')
+        print(soup.text)
         thread_list = soup.find('div', {'id': 'threadlist'})
         post_list = thread_list.find_all('tbody', {'id': re.compile(r'normalthread_\d*?')})
         print(self.time(), f'抓取帖子{len(post_list)}个', flush=True)
