@@ -13,6 +13,7 @@ class sehuatang:
     def __init__(self):
         self.url = 'https://www.sehuatang.net/'
         self.header = {'User-Agent': Faker().user_agent()}
+        self.cookies = {'_safe': os.getenv('_SAFE')}
         self.new_posts = []
         self.all_posts = set()
         with open('list.txt', 'r') as f:
@@ -22,7 +23,7 @@ class sehuatang:
     def getPostList(self):
         hd = {'Referer': 'https://www.sehuatang.net/index.php'}
         self.header.update(hd)
-        r = requests.get(self.url + 'forum-103-1.html', headers=self.header)
+        r = requests.get(self.url + 'forum-103-1.html', headers=self.header, cookies=self.cookies)
         soup = BeautifulSoup(r.text, 'html.parser')
         thread_list = soup.find('div', {'id': 'threadlist'})
         post_list = thread_list.find_all('tbody', {'id': re.compile(r'normalthread_\d*?')})
@@ -36,7 +37,7 @@ class sehuatang:
 
     # 获取帖子全文
     def getPostContent(self, url):
-        r = requests.get(url, headers=self.header)
+        r = requests.get(url, headers=self.header, cookies=self.cookies)
         soup = BeautifulSoup(r.text, 'html.parser')
         title = soup.find('h1', {'class': "ts"}).text.strip().replace('\n', ' ')
         title_link = f"<a href='{url}'>" + '<b>' + title + '</b>' + '</a>'
