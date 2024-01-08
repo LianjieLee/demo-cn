@@ -81,7 +81,6 @@ if __name__ == '__main__':
             else:
                 for j in range(1, len(img)):
                     media_list.append(telegram.InputMediaPhoto(media=img[j]))
-            bot.sendMessage(chat_id, content, parse_mode='HTML', disable_web_page_preview=True)
             bot.send_media_group(chat_id, media=media_list)
             print(se.time(), title, '已发送', flush=True)
             time.sleep(10)
