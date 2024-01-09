@@ -68,7 +68,7 @@ class sehuatang:
             video = re.search(r'"videoType":"mp4","src":"(http.*?mp4)"', r.text).group(1)
         except Exception as e:
             poster = video = None
-            print(self.time(), e, flush=True)
+            print(self.time(), '找不到JAV信息：', e, flush=True)
         return poster, video
 
     # 推送到TG
@@ -104,7 +104,9 @@ if __name__ == '__main__':
     sht.getPostList()
     for url in sht.new_posts:
         video_id, title, content = sht.getPostContent(url)
+        print('获取帖子内容成功：',video_id, title, content)
         poster, video = sht.dmm_info(video_id)
+        print('获取视频信息内容成功：',poster, video)
         sht.sendMsg(content, poster, video)
         time.sleep(10)
     sht.updateList()
