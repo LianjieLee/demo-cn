@@ -16,7 +16,7 @@ class sehuatang:
         self.bot_id = bot_id
         self.chat_id = chat_id
         self.url = 'https://www.sehuatang.net/'
-        self.header = {'User-Agent': Faker().user_agent()}
+        self.header = {'User-Agent': Faker().user_agent(), 'X-Forwarded-For': Faker().ipv4()}
         self.cookies = {'_safe': os.getenv('_SAFE')}
         self.new_posts = []
         self.all_posts = set()
