@@ -48,7 +48,7 @@ class sehuatang:
         title_link = f"<a href='{url}'>" + '<b>' + title + '</b>' + '</a>'
         post = soup.find('div', {'id': re.compile(r"post_\d*?")}).find('div', {'class': 't_fsz'})
         magnet = re.search(r'(magnet:\?xt=urn:btih:[0-9a-fA-F]{40})', post.text).group(1)
-        content = title_link + '\n' + magnet
+        content = title_link + f"\n<a href='{magnet}'>磁力链接</a>"
         print(self.time(), title, "已获取", flush=True)
         return video_id, title, content
 
@@ -84,7 +84,7 @@ class sehuatang:
                     media_list.append(telegram.InputMediaVideo(media=video))
                     bot.send_media_group(self.chat_id, media=media_list)
                 except Exception as e:
-                    bot.sendPhoto(self.chat_id, poster, caption + f"\n<a href='{video}'>视频预览</a>", parse_mode='HTML')
+                    bot.sendPhoto(self.chat_id, poster, caption + f" | <a href='{video}'>视频预览</a>", parse_mode='HTML')
             print(self.time(), caption, '已发送', flush=True)
         except Exception as e:
             print(self.time(), caption, e, flush=True)        
