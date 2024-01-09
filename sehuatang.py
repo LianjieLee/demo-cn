@@ -2,6 +2,7 @@
 import os
 import re
 import time
+import pathlib
 
 import requests
 import telegram
@@ -70,7 +71,7 @@ class sehuatang:
             with open(vname, 'wb') as vd:
                 with s.get(video) as v:
                     vd.write(v.content)
-            video = vname
+            video = pathlib.Path(vname)
             print(video, 'save!')
         except Exception as e:
             poster = video = None
@@ -113,6 +114,6 @@ if __name__ == '__main__':
         print('获取帖子内容成功：',video_id, title, content)
         poster, video = sht.dmm_info(video_id)
         print('获取视频信息内容成功：',poster, video)
-        sht.sendMsg(content, poster, open(video, 'wb'))
+        sht.sendMsg(content, poster, video)
         time.sleep(10)
     sht.updateList()
