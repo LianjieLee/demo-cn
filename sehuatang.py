@@ -79,7 +79,7 @@ class sehuatang:
                 bot.sendMessage(chat_id, caption, parse_mode='HTML', disable_web_page_preview=True)
             else:
                 media_list = [telegram.InputMediaPhoto(media=poster, caption=caption, parse_mode='HTML')]
-                media_list.append(telegram.InputMediaPhoto(media=video))
+                media_list.append(telegram.InputMediaVideo(media=video))
                 bot.send_media_group(self.chat_id, media=media_list)
             print(self.time(), caption, '已发送', flush=True)
         except Exception as e:
