@@ -7,10 +7,13 @@ import requests
 import telegram
 from bs4 import BeautifulSoup
 from faker import Faker
+from urllib import parse
 
 
 class sehuatang:
-    def __init__(self):
+    def __init__(self, bot_id, chat_id):
+        self.bot_id = bot_id
+        self.chat_id = chat_id
         self.url = 'https://www.sehuatang.net/'
         self.header = {'User-Agent': Faker().user_agent()}
         self.cookies = {'_safe': os.getenv('_SAFE')}
@@ -35,56 +38,73 @@ class sehuatang:
                 self.new_posts.append(self.url + thread)
         print(self.time(), f'新帖子{len(self.new_posts)}个', flush=True)
 
-    # 获取帖子全文
+    # 获取帖子内容
     def getPostContent(self, url):
         r = requests.get(url, headers=self.header, cookies=self.cookies)
         soup = BeautifulSoup(r.text, 'html.parser')
         title = soup.find('h1', {'class': "ts"}).text.strip().replace('\n', ' ')
+        video_id = title.split()[1].replace('-','')
         title_link = f"<a href='{url}'>" + '<b>' + title + '</b>' + '</a>'
         post = soup.find('div', {'id': re.compile(r"post_\d*?")}).find('div', {'class': 't_fsz'})
         magnet = re.search(r'(magnet:\?xt=urn:btih:[0-9a-fA-F]{40})', post.text).group(1)
-        imgs = post.table.find_all('img')
-        img = []
-        for i in imgs:
-            if 'http' in i['file']:
-                img.append(i['file'])
-            else:
-                img.append(self.url + i['file'])
         content = title_link + '\n' + magnet
         print(self.time(), title, "已获取", flush=True)
-        return title, content, img
+        return video_id, title, content
 
-    def time(self):
-        strftime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-        return strftime
+    #video_id SSIS835
+    def dmm_info(self, video_id):
+        try:
+            video_id = video_id.replace('-C','').replace('-','')
+            header = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101 Firefox/78.0', 'X-Forwarded-For': '104.28.243.105'}
+            url = f"https://www.dmm.co.jp/mono/dvd/-/detail/=/cid={video_id}/"
+            age_check = f"https://www.dmm.co.jp/age_check/=/declared=yes/?rurl={parse.quote(url)}"
+            s = requests.session()
+            s.get(age_check, headers=header)
+            r = s.get(url, headers=header)
+            soup = BeautifulSoup(r.text, "html.parser")
+            poster = soup.find('a', {'name': 'package-image'})['href']
+            video_info = f'https://www.dmm.co.jp/service/digitalapi/-/html5_player/=/cid={video_id}/mtype=AhRVShI_'
+            r = s.get(video_info, headers=header)
+            video = re.search(r'"videoType":"mp4","src":"(http.*?mp4)"', r.text).group(1)
+        except Exception as e:
+            poster = video = None
+            print(self.time(), e, flush=True)
+        return poster, video
 
+    # 推送到TG
+    def sendMsg(self, caption, poster, video):
+        bot = telegram.Bot(self.bot_id)
+        try:
+            if poster is None:
+                bot.sendMessage(chat_id, caption, parse_mode='HTML', disable_web_page_preview=True)
+            else:
+                media_list = [telegram.InputMediaPhoto(media=poster, caption=caption, parse_mode='HTML')]
+                media_list.append(telegram.InputMediaPhoto(media=video))
+                bot.send_media_group(self.chat_id, media=media_list)
+            print(self.time(), caption, '已发送', flush=True)
+        except Exception as e:
+            print(self.time(), caption, e, flush=True)        
+
+
+    # 更新帖子列表
     def updateList(self):
         with open('list.txt', 'w') as f:
             f.write(str(self.all_posts))
         print(self.time(), '列表已更新', flush=True)
 
+    def time(self):
+        strftime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        return strftime
+
 
 if __name__ == '__main__':
     bot_id = os.getenv('BOT_ID')
     chat_id = os.getenv('CHAT_ID')
-    se = sehuatang()
-    bot = telegram.Bot(bot_id)
-    se.getPostList()
-    for i in se.new_posts:
-        try:
-            title,content,img = se.getPostContent(i)
-            media_list = [telegram.InputMediaPhoto(media=img[0], caption=content, parse_mode='HTML')]
-            # TG limit to 10 pic
-            if len(img) > 10:
-                for j in range(1, 10):
-                    media_list.append(telegram.InputMediaPhoto(media=img[j]))
-            else:
-                for j in range(1, len(img)):
-                    media_list.append(telegram.InputMediaPhoto(media=img[j]))
-            #bot.send_media_group(chat_id, media=media_list)
-            bot.sendMessage(chat_id, content, parse_mode='HTML', disable_web_page_preview=True)
-            print(se.time(), title, '已发送', flush=True)
-            time.sleep(10)
-        except Exception as e:
-            print(se.time(), title, e, flush=True)
-    se.updateList()
+    sht = sehuatang(bot_id, chat_id)
+    sht.getPostList()
+    for url in sht.new_posts:
+        video_id, title, content = sht.getPostContent(url)
+        poster, video = sht.dmm_info(video_id)
+        sht.sendMsg(content, poster, video)
+        time.sleep(10)
+    sht.updateList()
