@@ -70,11 +70,12 @@ class sehuatang:
             with open(vname, 'wb') as vd:
                 with s.get(video) as v:
                     vd.write(v.content)
-            print(vname, 'save!')
+            video = vname
+            print(video, 'save!')
         except Exception as e:
             poster = video = None
             print(self.time(), '找不到JAV信息：', e, flush=True)
-        return poster, vname
+        return poster, video
 
     # 推送到TG
     def sendMsg(self, caption, poster, video):
