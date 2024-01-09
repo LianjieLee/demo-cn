@@ -67,12 +67,15 @@ class sehuatang:
             video_info = f'https://www.dmm.co.jp/service/digitalapi/-/html5_player/=/cid={video_id}/mtype=AhRVShI_'
             r = s.get(video_info, headers=header)
             video = re.search(r'"videoType":"mp4","src":"(http.*?mp4)"', r.text).group(1).replace('\\', '')
+<<<<<<< HEAD
             vname = video.split('/')[-1]
             with open(vname, 'wb') as vd:
                 with s.get(video) as v:
                     vd.write(v.content)
             video = f"./{vname}"
             print(video, 'save!')
+=======
+>>>>>>> parent of e585997e (download video to local)
         except Exception as e:
             poster = video = None
             print(self.time(), '找不到JAV信息：', e, flush=True)
