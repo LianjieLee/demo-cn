@@ -65,7 +65,7 @@ class sehuatang:
             poster = soup.find('a', {'name': 'package-image'})['href']
             video_info = f'https://www.dmm.co.jp/service/digitalapi/-/html5_player/=/cid={video_id}/mtype=AhRVShI_'
             r = s.get(video_info, headers=header)
-            video = re.search(r'"videoType":"mp4","src":"(http.*?mp4)"', r.text).group(1)
+            video = re.search(r'"videoType":"mp4","src":"(http.*?mp4)"', r.text).group(1).replace('\\', '')
         except Exception as e:
             poster = video = None
             print(self.time(), '找不到JAV信息：', e, flush=True)
