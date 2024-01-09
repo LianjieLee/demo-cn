@@ -71,7 +71,7 @@ class sehuatang:
             with open(vname, 'wb') as vd:
                 with s.get(video) as v:
                     vd.write(v.content)
-            video = pathlib.Path(vname)
+            video = str(pathlib.Path(vname))
             print(video, 'save!')
         except Exception as e:
             poster = video = None
