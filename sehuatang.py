@@ -113,6 +113,6 @@ if __name__ == '__main__':
         print('获取帖子内容成功：',video_id, title, content)
         poster, video = sht.dmm_info(video_id)
         print('获取视频信息内容成功：',poster, video)
-        sht.sendMsg(content, poster, video)
+        sht.sendMsg(content, poster, open(video, 'wb'))
         time.sleep(10)
     sht.updateList()
