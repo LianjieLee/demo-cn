@@ -84,7 +84,7 @@ class sehuatang:
                     media_list.append(telegram.InputMediaVideo(media=video))
                     bot.send_media_group(self.chat_id, media=media_list)
                 except Exception as e:
-                    bot.send_photo(self.chat_id, poster, caption + f'\n<a href={video}></a>', parse_mode='HTML')
+                    bot.sendPhoto(self.chat_id, poster, caption + f"\n<a href='{video}'>视频预览</a>", parse_mode='HTML')
             print(self.time(), caption, '已发送', flush=True)
         except Exception as e:
             print(self.time(), caption, e, flush=True)        
